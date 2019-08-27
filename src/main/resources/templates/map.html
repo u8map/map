@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+    <style type="text/css">
+        body, html, #allmap {
+            width: 100%;
+            height: 90%;
+            overflow: hidden;
+            margin: 0;
+            font-family: "微软雅黑";
+        }
+    </style>
+    <script type="text/javascript"
+            src="http://api.map.baidu.com/api?v=2.0&ak=YbMHkgFWeWlNa1XQNjWKKAfET2DQNC2X"></script>
+    <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+    <title>优八物流地图</title>
+</head>
+<body>
+<div id="allmap"></div>
+<button onclick="clearResults()">清除路线</button>
+<button onclick="search()">查询路线</button>
+<button onclick="search1()">查询路线（闭环）</button>
+<text  th:text="${minPath}"></text>
+</body>
+
+<script type="text/javascript" th:inline="javascript">
+    var ridingFlag = false; // 是否开启了路线标识
+
+    map = new BMap.Map("allmap");
+    var addressInfoArray = [[${addressInfoArray}]];
+    map.centerAndZoom(new BMap.Point(addressInfoArray[0].lng, addressInfoArray[0].lat), 15); // 创建起点坐标
+    map.enableScrollWheelZoom();                 //启用滚轮放大缩小
+
+    var opts = {
+        width: 250,     // 信息窗口宽度
+        height: 80,     // 信息窗口高度
+        // title: "信息", // 信息窗口标题
+        enableMessage: true//设置允许信息窗发送短息
+    };
+
+    // 驾车路线
+    var riding = new BMap.DrivingRoute(map, {
+        renderOptions: {
+            map: map,
+            autoViewport: true
+        }
+    });
+
+    // 各标注点 第一个点是起始地址
+    for (var i = 0; i < addressInfoArray.length; i++) {
+        var marker = new BMap.Marker(new BMap.Point(addressInfoArray[i].lng, addressInfoArray[i].lat));  // 创建标注
+        var content = addressInfoArray[i].address;
+        map.addOverlay(marker);               // 将标注添加到地图中
+        addClickHandler(content, marker);
+    }
+
+    function addClickHandler(content, marker) {
+        marker.addEventListener("click", function (e) {
+                openInfo(content, e)
+            }
+        );
+    }
+
+    // 打开信息窗口的方法
+    function openInfo(content, e) {
+        var p = e.target;
+        var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+        var infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象
+        map.openInfoWindow(infoWindow, point); //开启信息窗口
+    }
+
+    // 清除路线
+    function clearResults() {
+        if (ridingFlag) {
+            riding.clearResults();
+            ridingFlag = false;
+        }
+    }
+
+    // 路线查询
+    function search() {
+        if (!ridingFlag) {
+            var start = new BMap.Point(addressInfoArray[0].lng, addressInfoArray[0].lat);
+            var endNum = addressInfoArray.length - 1; // 最后一个点的编号
+            var end = new BMap.Point(addressInfoArray[endNum].lng, addressInfoArray[endNum].lat);
+
+            var midPointArray = []; // 中间点
+            for (var i = 1; i < addressInfoArray.length - 1; i++) {
+                midPointArray.push(new BMap.Point(addressInfoArray[i].lng, addressInfoArray[i].lat));
+            }
+            riding.search(start, end, {waypoints: midPointArray});
+            ridingFlag = true;
+        }
+    }
+
+    // 路线查询（闭环）
+    function search1() {
+        if (!ridingFlag) {
+            var start = new BMap.Point(addressInfoArray[0].lng, addressInfoArray[0].lat);
+            var endNum = addressInfoArray.length - 1; // 最后一个点的编号
+            var end = new BMap.Point(addressInfoArray[endNum].lng, addressInfoArray[endNum].lat);
+
+            var midPointArray = []; // 中间点
+            for (var i = 1; i < addressInfoArray.length; i++) {
+                midPointArray.push(new BMap.Point(addressInfoArray[i].lng, addressInfoArray[i].lat));
+            }
+            riding.search(start, start, {waypoints: midPointArray});
+            ridingFlag = true;
+        }
+    }
+
+    for (var i = 1;i < addressInfoArray.length;i++){
+        var pointA = new BMap.Point(addressInfoArray[i-1].lng, addressInfoArray[i-1].lat);
+        var pointB = new BMap.Point(addressInfoArray[i].lng, addressInfoArray[i].lat);
+        var distance = map.getDistance(pointA,pointB).toFixed(2);
+        console.log(distance);
+    }
+    
+</script>
+</html>

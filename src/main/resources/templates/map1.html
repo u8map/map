@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+    <style type="text/css">
+        body, html, #allmap {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            font-family: "微软雅黑";
+        }
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=YbMHkgFWeWlNa1XQNjWKKAfET2DQNC2X"></script>
+    <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+    <title>优八物流地图</title>
+</head>
+<body>
+<div id="allmap"></div>
+</body>
+<script type="text/javascript" th:inline="javascript">
+    /*    //百度地图API功能
+        function loadJScript() {
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src = "//api.map.baidu.com/api?v=2.0&ak=YbMHkgFWeWlNa1XQNjWKKAfET2DQNC2X&callback=init";
+            document.body.appendChild(script);
+        }
+
+        function init() {
+            var sContent =[[${addressInfo.address}]];
+            var map = new BMap.Map("allmap");            // 创建Map实例
+            var startPoint = new BMap.Point([[${startLng}]], [[${startLat}]]); // 创建起点坐标
+            map.centerAndZoom(startPoint,15); // 地图中心位置以及地图大小
+
+
+            var startMarker = new BMap.Marker(startPoint);  // 创建标注
+            var startInfoWindow = new BMap.InfoWindow("起点");  // 创建信息窗口对象
+            map.addOverlay(startMarker);
+            map.openInfoWindow(startInfoWindow,startPoint);
+
+            var point = new BMap.Point([[${addressInfo.lng}]], [[${addressInfo.lat}]]); // 创建送货点坐标
+            var marker = new BMap.Marker(point);  // 创建标注
+
+            var infoWindow = new BMap.InfoWindow(sContent);  // 创建信息窗口对象
+            map.openInfoWindow(infoWindow,point); //开启信息窗口 一次只能开启一个
+
+            map.addOverlay(marker); // 将标注添加到地图中
+            map.centerAndZoom(startPoint,15);
+            map.enableScrollWheelZoom();                 //启用滚轮放大缩小
+        }
+
+        window.onload = loadJScript;  //异步加载地图*/
+    // 百度地图API功能
+    map = new BMap.Map("allmap");
+    map.centerAndZoom(new BMap.Point([[${startLng}]], [[${startLat}]]), 15); // 创建起点坐标
+    console.log([[${addressInfo}]]);
+    // var data_info = [
+    //     [[[${startLng}]], [[${startLat}]], "优八菜包配送点"],
+    //     [[[${addressInfo.lng}]], [[${addressInfo.lat}]], [[${addressInfo.address}]]],
+    // ];
+    var opts = {
+        width: 250,     // 信息窗口宽度
+        height: 80,     // 信息窗口高度
+        title: "信息窗口", // 信息窗口标题
+        enableMessage: true//设置允许信息窗发送短息
+    };
+    for (var i = 0; i < [[${addressInfoArray}]].length; i++) {
+        var marker = new BMap.Marker(new BMap.Point([[${addressInfo}]][i][0], [[${addressInfo}]][i][1]));  // 创建标注
+        var content = [[${addressInfoArray}]][i][2];
+        map.addOverlay(marker);               // 将标注添加到地图中
+        addClickHandler(content, marker);
+    }
+
+    function addClickHandler(content, marker) {
+        marker.addEventListener("click", function (e) {
+                openInfo(content, e)
+            }
+        );
+    }
+
+    function openInfo(content, e) {
+        var p = e.target;
+        var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+        var infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象
+        map.openInfoWindow(infoWindow, point); //开启信息窗口
+    }
+</script>
+</html>
