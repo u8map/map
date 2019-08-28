@@ -3,6 +3,9 @@ package com.u8.util;
 import com.u8.entity.AddressInfo;
 
 import java.awt.geom.Point2D;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class Util {
@@ -54,4 +57,23 @@ public class Util {
 
     }
 
+
+    /**
+     * 10位int型的时间戳转换为String(yyyy-MM-dd HH:mm:ss)
+     * @param time
+     * @return
+     */
+    public static String timestampToString(Long time){
+        //int转long时，先进行转型再进行计算，否则会是计算结束后在转型
+        long temp = time*1000;
+        Timestamp ts = new Timestamp(temp);
+        String tsStr = "";
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            tsStr = dateFormat.format(ts);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return tsStr;
+    }
 }

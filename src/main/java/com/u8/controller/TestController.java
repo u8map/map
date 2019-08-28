@@ -23,7 +23,7 @@ public class TestController {
 //        Optional<Order> emptyOpt = orderService.findById(1L);
 //        return emptyOpt.get().getIsSend().toString();
 
-        List<Order> list = orderService.findByIsSend(1);
+        List<Order> list = orderService.findOrderList();
         return list.toString();
     }
 }

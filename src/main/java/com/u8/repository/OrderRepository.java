@@ -10,5 +10,5 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    List<Order> findByIsSend(Integer isSend);
+    List<Order> findByIsSendAndIsPayAndApplyDelete(Integer isSend,Integer isPay,Integer applyDelete);
 }

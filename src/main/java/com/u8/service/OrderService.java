@@ -8,7 +8,6 @@ import java.util.Optional;
 
 
 public interface OrderService {
-    List<Order> findByIsSend(Integer isSend);
+    List<Order> findOrderList();
 
-    Optional<Order> findById(Long id);
 }

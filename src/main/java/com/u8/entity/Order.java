@@ -40,8 +40,8 @@ public class Order implements Serializable {
     private String address;
     @Column
     private String remark;
-    @Column
-    private Integer is_pay;
+    @Column(name="is_pay")
+    private Integer isPay;
     @Column
     private Integer pay_type;
     @Column
@@ -60,8 +60,8 @@ public class Order implements Serializable {
     private Long confirm_time;
     @Column
     private Integer is_comment;
-    @Column
-    private Integer apply_delete;
+    @Column(name = "apply_delete")
+    private Integer applyDelete;
     @Column
     private Long addtime;
     @Column

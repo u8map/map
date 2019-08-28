@@ -1,8 +1,10 @@
 package com.u8;
 
 import com.u8.entity.AddressInfo;
+import com.u8.entity.Order;
 import com.u8.service.MapService;
 import com.u8.service.OrderService;
+import com.u8.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,15 +12,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class MapApplicationTests {
-	@Autowired
-	OrderService orderService;
+    @Autowired
+    OrderService orderService;
 
-	@Autowired
-	MapService mapService;
+    @Autowired
+    MapService mapService;
 
 //	{
 //		"status":0,
@@ -42,8 +48,8 @@ public class MapApplicationTests {
 //    ]
 //	}
 
-	@Test
-	public void contextLoads() {
+    @Test
+    public void contextLoads() {
 //		List<Order> list = orderService.findByIsSend(0);
 //
 //		for (Order order : list) {
@@ -53,5 +59,13 @@ public class MapApplicationTests {
 
 //		AddressInfo addressInfo = mapService.LocationRetrieval("湖南省邵阳市双清区","人民广场佳惠超市",1);
 //		log.info(addressInfo.toString());
-	}
+        List<Order> list = orderService.findOrderList();
+
+        for (Order order : list) {
+            log.info(order.getOrder_no() + " " + order.getAddress() + " " + order.getName() + " " + Util.timestampToString(order.getPay_time()) + " " +
+					order.getMobile());
+        }
+    }
+
+
 }

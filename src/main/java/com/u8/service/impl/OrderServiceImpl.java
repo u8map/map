@@ -15,13 +15,9 @@ public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
 
     @Override
-    public List<Order> findByIsSend(Integer isSend) {
-        return orderRepository.findByIsSend(isSend);
+    public List<Order> findOrderList() {
+        return orderRepository.findByIsSendAndIsPayAndApplyDelete(0,1,0);
     }
 
-    @Override
-    public Optional<Order> findById(Long id) {
-        return orderRepository.findById(id);
-    }
 
 }
