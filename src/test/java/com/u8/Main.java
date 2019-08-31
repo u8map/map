@@ -5,6 +5,7 @@ import com.u8.util.Util;
 
 import java.awt.geom.Point2D;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -165,7 +166,25 @@ public class Main {
 //        this.py = py;
 //    }
 
+    public static void main(String[] args) {
+        BigDecimal xLng = new BigDecimal(String.valueOf(111.496206));
+        BigDecimal yLng = new BigDecimal(String.valueOf(111.494454));
+        BigDecimal xLat = new BigDecimal(String.valueOf(27.232767));
+        BigDecimal yLat = new BigDecimal(String.valueOf(27.232767));
+        BigDecimal resultLng = xLng.subtract(yLng);
+        BigDecimal resultLat = xLat.subtract(yLat);
+        BigDecimal result = resultLng.abs().add(resultLat.abs());
 
+
+        System.out.println(result);
+
+
+        if (result.doubleValue() < 0.0005) {
+            System.out.println("在范围内");
+        }else{
+            System.out.println("在范围外");
+        }
+    }
 
 
 }

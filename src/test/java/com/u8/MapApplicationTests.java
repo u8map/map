@@ -3,7 +3,6 @@ package com.u8;
 import com.u8.entity.AddressInfo;
 import com.u8.entity.Order;
 import com.u8.service.MapService;
-import com.u8.service.OrderService;
 import com.u8.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -12,16 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class MapApplicationTests {
-    @Autowired
-    OrderService orderService;
 
     @Autowired
     MapService mapService;
@@ -59,11 +54,10 @@ public class MapApplicationTests {
 
 //		AddressInfo addressInfo = mapService.LocationRetrieval("湖南省邵阳市双清区","人民广场佳惠超市",1);
 //		log.info(addressInfo.toString());
-        List<Order> list = orderService.findOrderList();
+        List<AddressInfo>[] lists = mapService.search();
 
-        for (Order order : list) {
-            log.info(order.getOrder_no() + " " + order.getAddress() + " " + order.getName() + " " + Util.timestampToString(order.getPay_time()) + " " +
-					order.getMobile());
+        for (AddressInfo addressInfo:lists[0]) {
+            System.out.println(addressInfo);
         }
     }
 

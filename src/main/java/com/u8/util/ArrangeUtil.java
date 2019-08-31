@@ -9,9 +9,6 @@ import java.util.List;
  * 位置排列的工具类
  */
 public class ArrangeUtil {
-
-
-
     // 记录最短路径（默认是“无限大”表示不可达）
     private double minPath = Integer.MAX_VALUE;
 
@@ -25,13 +22,14 @@ public class ArrangeUtil {
     public List<AddressInfo> getPointList() {
         return pointList;
     }
+    public ArrangeUtil(){}
 
     public ArrangeUtil(List<AddressInfo> points){
         rangeAll(points,0);
     }
 
-    /**
-     * 用全排列解决此问题
+  /**
+     * 用全排列算法 点多的时候负载太大
      *
      * @param points 坐标点
      * @param n
@@ -40,13 +38,14 @@ public class ArrangeUtil {
         if (n == points.size()) {
             List<AddressInfo> tmpPointList = new ArrayList<>();
             // 计算这次排列的路径长度
-            double sum = Util.getDistance(points.get(0),Util.START);
+//            double sum = Util.getDistance(points.get(0),Util.START); //TODO 加过起点了 此处需要修改
+            double sum = 0;
             for (int i = 1; i < points.size(); i++) {
                 sum += Util.getDistance(points.get(i-1),points.get(i));
                 tmpPointList.add(points.get(i - 1));
             }
             // 【千万不要忘了加上回到原点的路径】
-            sum += Util.getDistance(points.get(points.size() - 1),Util.START);
+            sum += Util.getDistance(points.get(points.size() - 1),points.get(0));
             tmpPointList.add(points.get(points.size() - 1));
             // 记录最短长度【其实这里也可以记录下路径详情(也就是这次全排列的顺序)】
             if(minPath > sum){

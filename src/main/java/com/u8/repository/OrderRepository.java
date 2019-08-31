@@ -10,5 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    List<Order> findByIsSendAndIsPayAndApplyDelete(Integer isSend,Integer isPay,Integer applyDelete);
+    List<Order> findByIsSendAndIsPayAndApplyDeleteAndIsDeleteAndIsCancelAndIsRecycle
+            (Integer isSend, Integer isPay, Integer applyDelete, Integer isDelete,Integer isCancel,Integer isRecycle);
 }

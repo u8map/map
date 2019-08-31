@@ -4,13 +4,24 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
     <style type="text/css">
-        body, html, #allmap {
+        body, html {
             width: 100%;
-            height: 90%;
-            overflow: hidden;
+            height: 100%;
+            /*overflow: hidden;*/
             margin: 0;
             font-family: "微软雅黑";
         }
+
+        #allmap {
+            width: 100%;
+            height: 80%;
+            overflow: hidden;
+            /*margin: 0;*/
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-family: "微软雅黑";
+        }
+
     </style>
     <script type="text/javascript"
             src="http://api.map.baidu.com/api?v=2.0&ak=YbMHkgFWeWlNa1XQNjWKKAfET2DQNC2X"></script>
@@ -22,7 +33,8 @@
 <button onclick="clearResults()">清除路线</button>
 <button onclick="search()">查询路线</button>
 <button onclick="search1()">查询路线（闭环）</button>
-<text  th:text="${minPath}"></text>
+<button onclick="refresh()">刷新</button>
+<p style="font-size: 14px" id="errorInfo"></p>
 </body>
 
 <script type="text/javascript" th:inline="javascript">
@@ -30,15 +42,20 @@
 
     map = new BMap.Map("allmap");
     var addressInfoArray = [[${addressInfoArray}]];
+    // console.log(addressInfoArray);
     map.centerAndZoom(new BMap.Point(addressInfoArray[0].lng, addressInfoArray[0].lat), 15); // 创建起点坐标
     map.enableScrollWheelZoom();                 //启用滚轮放大缩小
 
-    var opts = {
-        width: 250,     // 信息窗口宽度
-        height: 80,     // 信息窗口高度
-        // title: "信息", // 信息窗口标题
-        enableMessage: true//设置允许信息窗发送短息
-    };
+    // 左上角地图控制器
+    var navigationControl = new BMap.NavigationControl({
+        // 靠左上角位置
+        anchor: BMAP_ANCHOR_TOP_LEFT,
+        // LARGE类型
+        type: BMAP_NAVIGATION_CONTROL_LARGE,
+        // 启用显示定位
+        enableGeolocation: false
+    });
+    map.addControl(navigationControl);
 
     // 驾车路线
     var riding = new BMap.DrivingRoute(map, {
@@ -51,22 +68,33 @@
     // 各标注点 第一个点是起始地址
     for (var i = 0; i < addressInfoArray.length; i++) {
         var marker = new BMap.Marker(new BMap.Point(addressInfoArray[i].lng, addressInfoArray[i].lat));  // 创建标注
-        var content = addressInfoArray[i].address;
+        var content = addressInfoArray[i].info;
         map.addOverlay(marker);               // 将标注添加到地图中
-        addClickHandler(content, marker);
+        addClickHandler(addressInfoArray[i].orderNum, content, marker);
     }
 
-    function addClickHandler(content, marker) {
+    function addClickHandler(orderNum, content, marker) {
         marker.addEventListener("click", function (e) {
-                openInfo(content, e)
+                openInfo(orderNum, content, e)
             }
         );
     }
 
     // 打开信息窗口的方法
-    function openInfo(content, e) {
+    function openInfo(orderNum, content, e) {
+        // 送货点信息窗口设置
+        var opts = {
+            width: 300,     // 信息窗口宽度
+            enableMessage: true//设置允许信息窗发送短息
+        };
+
         var p = e.target;
         var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+        opts.height = 120 * orderNum;
+        if (orderNum > 1) {
+            opts.title = "<strong>有" + orderNum + "个订单</strong>";
+        }
+        // opts.title = "订单信息("+orderNum+")";
         var infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象
         map.openInfoWindow(infoWindow, point); //开启信息窗口
     }
@@ -111,12 +139,22 @@
         }
     }
 
-    for (var i = 1;i < addressInfoArray.length;i++){
-        var pointA = new BMap.Point(addressInfoArray[i-1].lng, addressInfoArray[i-1].lat);
-        var pointB = new BMap.Point(addressInfoArray[i].lng, addressInfoArray[i].lat);
-        var distance = map.getDistance(pointA,pointB).toFixed(2);
-        console.log(distance);
+    function refresh() {
+        window.location.reload();
     }
-    
+
+    // 没有找到地址的订单信息
+    var errorAddressInfoArray = [[${errorAddressInfoArray}]];
+    var errInfoNum =  errorAddressInfoArray.length;
+    var errorInfo ="";
+    if (errInfoNum > 0){
+        errorInfo = "<strong>有"+ errInfoNum +"条没有找到地址的订单信息</strong><br/>--------------------------<br/>";
+        // 各标注点 第一个点是起始地址
+        for (var i = 0; i < errorAddressInfoArray.length; i++) {
+            errorInfo += errorAddressInfoArray[i].info;
+        }
+    }
+    document.getElementById("errorInfo").innerHTML = errorInfo;
+
 </script>
 </html>

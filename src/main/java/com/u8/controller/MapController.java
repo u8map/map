@@ -23,25 +23,27 @@ public class MapController {
 
     @RequestMapping("/map")
     public String hello(Model map) {
-        List<AddressInfo> addressInfoArray = new ArrayList();
-        // 起点
-        addressInfoArray.add(Util.START);
+
 
 //        AddressInfo addressInfo = mapService.LocationRetrieval("湖南省邵阳市邵东县","人民政府",1);
         // 查询点信息
 
-        addressInfoArray.add(mapService.LocationRetrieval(Util.REGION, "人民政府"));
-        addressInfoArray.add(mapService.LocationRetrieval(Util.REGION, "龙城宾馆"));
-        addressInfoArray.add(mapService.LocationRetrieval(Util.REGION, "邦盛凤凰城"));
-        addressInfoArray.add(mapService.LocationRetrieval(Util.REGION, "人民医院"));
-        addressInfoArray.add(mapService.LocationRetrieval(Util.REGION, "百富广场"));
-        addressInfoArray.add(mapService.LocationRetrieval(Util.REGION, "一中"));
-        addressInfoArray.add(mapService.LocationRetrieval(Util.REGION, "格林春天"));
-        // 按距离排序
-        ArrangeUtil arrangeUtil = new ArrangeUtil(addressInfoArray);
+//        addressInfoArray.add(mapService.LocationRetrieval("人民政府"));
+//        addressInfoArray.add(mapService.LocationRetrieval("龙城宾馆"));
+//        addressInfoArray.add(mapService.LocationRetrieval("邦盛凤凰城"));
+//        addressInfoArray.add(mapService.LocationRetrieval("人民医院"));
+//        addressInfoArray.add(mapService.LocationRetrieval("百富广场"));
+//        addressInfoArray.add(mapService.LocationRetrieval("一中"));
+//        addressInfoArray.add(mapService.LocationRetrieval("格林春天"));
 
-        map.addAttribute("minPath", String.format("总距离%.2f米",arrangeUtil.getMinPath()));
-        map.addAttribute("addressInfoArray", arrangeUtil.getPointList());
+
+//        map.addAttribute("minPath", String.format("总距离%.2f米",arrangeUtil.getMinPath()));
+
+        List<AddressInfo>[] lists = mapService.search();
+        map.addAttribute("addressInfoArray", lists[0]);
+        map.addAttribute("errorAddressInfoArray", lists[1]);
+
+
         return "map";
     }
 

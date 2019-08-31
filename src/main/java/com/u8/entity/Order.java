@@ -24,8 +24,8 @@ public class Order implements Serializable {
     private Long store_id;
     @Column
     private Long user_id;
-    @Column
-    private String order_no;
+    @Column(name="order_no")
+    private String orderNo;
     @Column
     private Double total_price;
     @Column
@@ -44,8 +44,8 @@ public class Order implements Serializable {
     private Integer isPay;
     @Column
     private Integer pay_type;
-    @Column
-    private Long pay_time;
+    @Column(name="pay_time")
+    private Long payTime;
     @Column(name="is_send")
     private Integer isSend;
     @Column
@@ -64,8 +64,8 @@ public class Order implements Serializable {
     private Integer applyDelete;
     @Column
     private Long addtime;
-    @Column
-    private Integer is_delete;
+    @Column(name = "is_delete")
+    private Integer isDelete;
     @Column
     private Integer is_price;
     @Column
@@ -86,8 +86,8 @@ public class Order implements Serializable {
     private Long clerk_id;
     @Column
     private String address_data;
-    @Column
-    private Integer is_cancel;
+    @Column(name = "is_cancel")
+    private Integer isCancel;
     @Column
     private String offline_qrcode;
     @Column
@@ -114,8 +114,8 @@ public class Order implements Serializable {
     private String version;
     @Column
     private Double express_price_1;
-    @Column
-    private Integer is_recycle;
+    @Column(name = "is_recycle")
+    private Integer isRecycle;
     @Column
     private Double rebate;
     @Column
