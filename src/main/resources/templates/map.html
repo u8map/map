@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ch" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
@@ -14,27 +14,23 @@
 
         #allmap {
             width: 100%;
-            height: 80%;
+            height: 100%;
             overflow: hidden;
             /*margin: 0;*/
-            margin-bottom: 10px;
             font-size: 14px;
             font-family: "微软雅黑";
         }
-
     </style>
     <script type="text/javascript"
             src="http://api.map.baidu.com/api?v=2.0&ak=YbMHkgFWeWlNa1XQNjWKKAfET2DQNC2X"></script>
-    <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+    <!--    <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>-->
+    <script src="/webjars/jquery/jquery.js"></script>
+    <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css"/>
     <title>优八物流地图</title>
 </head>
 <body>
 <div id="allmap"></div>
-<button onclick="clearResults()">清除路线</button>
-<button onclick="search()">查询路线</button>
-<button onclick="search1()">查询路线（闭环）</button>
-<button onclick="refresh()">刷新</button>
-<p style="font-size: 14px" id="errorInfo"></p>
 </body>
 
 <script type="text/javascript" th:inline="javascript">
@@ -42,9 +38,13 @@
 
     map = new BMap.Map("allmap");
     var addressInfoArray = [[${addressInfoArray}]];
-    // console.log(addressInfoArray);
-    map.centerAndZoom(new BMap.Point(addressInfoArray[0].lng, addressInfoArray[0].lat), 15); // 创建起点坐标
+    centerAndZoom();
     map.enableScrollWheelZoom();                 //启用滚轮放大缩小
+
+    // 中心点
+    function centerAndZoom() {
+        map.centerAndZoom(new BMap.Point(addressInfoArray[0].lng, addressInfoArray[0].lat), 15); // 创建起点坐标
+    }
 
     // 左上角地图控制器
     var navigationControl = new BMap.NavigationControl({
@@ -67,7 +67,14 @@
 
     // 各标注点 第一个点是起始地址
     for (var i = 0; i < addressInfoArray.length; i++) {
-        var marker = new BMap.Marker(new BMap.Point(addressInfoArray[i].lng, addressInfoArray[i].lat));  // 创建标注
+        var marker;
+        if (i == 0) {
+            var u8Icon = new BMap.Icon("/img/u8_start.gif", new BMap.Size(28, 28));
+            marker = new BMap.Marker(new BMap.Point(addressInfoArray[i].lng, addressInfoArray[i].lat), {icon: u8Icon});
+        } else {
+            marker = new BMap.Marker(new BMap.Point(addressInfoArray[i].lng, addressInfoArray[i].lat));  // 创建标注
+        }
+
         var content = addressInfoArray[i].info;
         map.addOverlay(marker);               // 将标注添加到地图中
         addClickHandler(addressInfoArray[i].orderNum, content, marker);
@@ -109,13 +116,14 @@
 
     // 路线查询
     function search() {
+        clearResults();
         if (!ridingFlag) {
             var start = new BMap.Point(addressInfoArray[0].lng, addressInfoArray[0].lat);
             var endNum = addressInfoArray.length - 1; // 最后一个点的编号
             var end = new BMap.Point(addressInfoArray[endNum].lng, addressInfoArray[endNum].lat);
 
             var midPointArray = []; // 中间点
-            for (var i = 1; i < addressInfoArray.length - 1; i++) {
+            for (var i = 1; i < addressInfoArray.length - 1 && i < 30; i++) {
                 midPointArray.push(new BMap.Point(addressInfoArray[i].lng, addressInfoArray[i].lat));
             }
             riding.search(start, end, {waypoints: midPointArray});
@@ -124,14 +132,15 @@
     }
 
     // 路线查询（闭环）
-    function search1() {
+    function searchLoop() {
+        clearResults();
         if (!ridingFlag) {
             var start = new BMap.Point(addressInfoArray[0].lng, addressInfoArray[0].lat);
-            var endNum = addressInfoArray.length - 1; // 最后一个点的编号
-            var end = new BMap.Point(addressInfoArray[endNum].lng, addressInfoArray[endNum].lat);
+            // var endNum = addressInfoArray.length - 1; // 最后一个点的编号
+            // var end = new BMap.Point(addressInfoArray[endNum].lng, addressInfoArray[endNum].lat);
 
             var midPointArray = []; // 中间点
-            for (var i = 1; i < addressInfoArray.length; i++) {
+            for (var i = 1; i < addressInfoArray.length && i < 30; i++) {
                 midPointArray.push(new BMap.Point(addressInfoArray[i].lng, addressInfoArray[i].lat));
             }
             riding.search(start, start, {waypoints: midPointArray});
@@ -139,22 +148,31 @@
         }
     }
 
-    function refresh() {
-        window.location.reload();
-    }
+
 
     // 没有找到地址的订单信息
     var errorAddressInfoArray = [[${errorAddressInfoArray}]];
-    var errInfoNum =  errorAddressInfoArray.length;
-    var errorInfo ="";
-    if (errInfoNum > 0){
-        errorInfo = "<strong>有"+ errInfoNum +"条没有找到地址的订单信息</strong><br/>--------------------------<br/>";
+    var errInfoNum = errorAddressInfoArray.length;
+    var errorInfo = "";
+    if (errInfoNum > 0) {
         // 各标注点 第一个点是起始地址
         for (var i = 0; i < errorAddressInfoArray.length; i++) {
+            if (i > 0) {
+                errorInfo += "--------------------------------------------<br/>"
+            }
             errorInfo += errorAddressInfoArray[i].info;
         }
     }
-    document.getElementById("errorInfo").innerHTML = errorInfo;
+
+
+    if (errInfoNum > 0) {
+        window.parent.document.getElementById("errorInfoTitle").innerHTML = "有" + errInfoNum + "条没有找到地址的订单信息";
+        window.parent.document.getElementById("errorInfoPanel").hidden = false;
+    } else {
+        window.parent.document.getElementById("errorInfoPanel").hidden = true;
+    }
+    window.parent.document.getElementById("errorInfo").innerHTML = errorInfo;
+
 
 </script>
 </html>

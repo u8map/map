@@ -47,9 +47,8 @@ public class MapController {
         return "map";
     }
 
-    @RequestMapping("/hello")
-    public String hello(ModelMap map) {
-        map.addAttribute("message", "你好");
-        return "hello";
+    @RequestMapping("/")
+    public String main(ModelMap map) {
+        return "main";
     }
 }

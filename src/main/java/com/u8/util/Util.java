@@ -16,25 +16,25 @@ public class Util {
     public static final String MAP_SEARCH_URL = "http://api.map.baidu.com/place/v2/search";
 
     // 起送点纬度
-//    public static final double START_LAT = 27.25749;
+    public static final double START_LAT = 27.25749;
 
     // 起送点经度
-//    public static final double START_LNG = 111.739614;
+    public static final double START_LNG = 111.739614;
 
     // 起送点纬度
-    public static final double START_LAT = 27.248322;
+//    public static final double START_LAT = 27.248322;
 
     // 起送点经度
-    public static final double START_LNG = 111.535337;
+//    public static final double START_LNG = 111.535337;
 
 
     // 起送点经度
     public static String START_INFO = "优八起送点";
 
     // 限定区域
-//    public static String REGION = "湖南省邵阳市邵东县";
+    public static String REGION = "湖南省邵阳市邵东县";
 
-    public static String REGION = "湖南省邵阳市双清区";
+//    public static String REGION = "湖南省邵阳市双清区";
     // 起始点
     public static final AddressInfo START = new AddressInfo("",REGION,START_INFO,START_LAT,START_LNG,START_INFO);
 
