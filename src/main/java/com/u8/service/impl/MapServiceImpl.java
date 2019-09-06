@@ -3,7 +3,9 @@ package com.u8.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.u8.entity.AddressInfo;
+import com.u8.entity.MapInfo;
 import com.u8.entity.Order;
+import com.u8.repository.MapInfoRepository;
 import com.u8.repository.OrderRepository;
 import com.u8.service.MapService;
 import com.u8.util.ArrangeUtil;
@@ -28,6 +30,8 @@ public class MapServiceImpl implements MapService {
     private RestTemplate restTemplate;
     @Autowired
     private OrderRepository orderRepository;
+    @Autowired
+    private MapInfoRepository mapInfoRepository;
 
     // 缓存上一次数据库查询过的订单数，当有新的查询时，先将此缓存与查询结果做比较，如果结果一致则返回上一次的结果、
     private List<Order> listCache;
@@ -40,6 +44,9 @@ public class MapServiceImpl implements MapService {
      * @return
      */
     public List<AddressInfo>[] search() {
+        MapInfo mapInfo = mapInfoRepository.getOne(1L);
+
+
         List<Order> list = orderRepository.findByIsSendAndIsPayAndApplyDeleteAndIsDeleteAndIsCancelAndIsRecycle
                 (0, 1, 0, 0, 0, 0);
         // 如果和缓存中的结果一致 并且listsCache有数据
@@ -70,20 +77,20 @@ public class MapServiceImpl implements MapService {
                 }
             } else {
                 // 根据用户地址获取经纬度
-                Double[] latLng = LocationRetrieval(order.getAddress());
+                Double[] latLng = LocationRetrieval(order.getAddress(), mapInfo.getRegion(), mapInfo.getAK(), mapInfo.getKeywords());
                 StringBuffer stringBuffer = new StringBuffer();
                 stringBuffer.append("订单号：");
                 stringBuffer.append(order.getOrderNo());
                 stringBuffer.append("<br/>收货人姓名：");
                 stringBuffer.append(order.getName());
                 stringBuffer.append("<br/>收货地址：");
-                stringBuffer.append(order.getAddress().replace(Util.REGION,""));
+                stringBuffer.append(order.getAddress().replace(mapInfo.getRegion(), ""));
                 stringBuffer.append("<br/>收货人电话：");
                 stringBuffer.append(order.getMobile());
                 stringBuffer.append("<br/>下单时间：");
                 stringBuffer.append(Util.timestampToString(order.getPayTime()));
                 stringBuffer.append("<br/>");
-                AddressInfo addressInfo = new AddressInfo(order.getOrderNo(), Util.REGION, order.getAddress(),
+                AddressInfo addressInfo = new AddressInfo(order.getOrderNo(), mapInfo.getRegion(), order.getAddress(),
                         latLng[0], latLng[1], stringBuffer.toString());
                 log.info(addressInfo.toString());
                 // 查找不到的地址信息
@@ -98,8 +105,11 @@ public class MapServiceImpl implements MapService {
         List<AddressInfo>[] lists = new List[2];
 
         List<AddressInfo> addressInfoArray = new ArrayList();
+
+        AddressInfo addressInfoStart = new AddressInfo("", mapInfo.getRegion(), mapInfo.getRegion(),
+                mapInfo.getLat(), mapInfo.getLng(), mapInfo.getInfo());
         // 起点
-        addressInfoArray.add(Util.START);
+        addressInfoArray.add(addressInfoStart);
 
         // 所有送货点，送货点将地址一样的订单放到一起
         addressInfoArray.addAll(mergeAll(addressInfos, 0));
@@ -147,7 +157,7 @@ public class MapServiceImpl implements MapService {
             if (result.doubleValue() < 0.0005) {
                 String info = addressInfos.remove(i).getInfo(); // 删除地址一样的值 并获取他的信息
                 addressInfo.setInfo(addressInfo.getInfo() + "---------------------------------------<br/>" + info);
-                addressInfo.setOrderNum(addressInfo.getOrderNum()+1);
+                addressInfo.setOrderNum(addressInfo.getOrderNum() + 1);
             }
         }
 
@@ -157,17 +167,20 @@ public class MapServiceImpl implements MapService {
     /**
      * 地点检索
      *
-     * @param query 检索关键字
+     * @param query    检索关键字 例：湖南省邵阳市邵东县县政府
+     * @param region   所在区域 例：湖南省邵阳市邵东县
+     * @param AK       百度地图密匙
+     * @param keywords 地区关键字 例：邵东
      * @return 用户收货地址的信息
      */
-    private Double[] LocationRetrieval(String query) {
+    private Double[] LocationRetrieval(String query, String region, String AK, String keywords) {
         Double[] doubles = new Double[2];
         AddressInfo addressInfo = new AddressInfo();
         // 通过百度获取经纬度
         String output = "json"; // 输出格式
         String tag = "房地产,公司企业"; // 检索分类偏好
         String url = String.format("%s?query=%s&tag=%s&region=%s&output=%s&ak=%s&page_size=%d",
-                Util.MAP_SEARCH_URL, query, tag, Util.REGION, output, Util.AK, 1);
+                Util.MAP_SEARCH_URL, query, tag, region, output, AK, 1);
         String json = restTemplate.getForObject(url, String.class);
 
         // 获取的json中提取经纬度
@@ -175,6 +188,21 @@ public class MapServiceImpl implements MapService {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(json);
             JsonNode resultsNode = rootNode.path("results"); // 获取results
+
+            String area = resultsNode.get(0).path("area").asText();
+            boolean flag = false;
+            String[] key = keywords.split(",");
+            for (String str : key) {
+                if (area.contains(str)) {
+                    flag = true; // 包含所在区域
+                    break;
+                }
+            }
+
+            if (!flag) { // 如果不包含地区关键字
+                throw new NullPointerException();
+            }
+
             JsonNode locationNode = resultsNode.get(0).path("location"); // results是数组,获取第一个地址的json并获得金纬度
             doubles[0] = locationNode.path("lat").asDouble();
             doubles[1] = locationNode.path("lng").asDouble();

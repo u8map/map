@@ -10,8 +10,8 @@
 </head>
 <body>
 <div class="col-lg-9 col-md-8 col-sm-12 col-xs-12">
-<!--   高度如果没有默认值 百度地图中心点显示不正确 -->
-    <iframe id="iframePage" width="100%"  scrolling="auto" frameborder="0" src="../map">
+    <!--   高度如果没有默认值 百度地图中心点显示不正确 -->
+    <iframe id="iframePage" width="100%" scrolling="auto" frameborder="0" src="../map">
     </iframe>
 </div>
 
@@ -20,7 +20,8 @@
         <button type="button" class="btn btn-info" onclick="refresh()" style="margin-top: 5px">刷新页面
         </button>
 
-        <button type="button" class="btn btn-info" onclick="centerAndZoom()" style="margin-left: 5px;margin-top: 5px">回到中心点
+        <button type="button" class="btn btn-info" onclick="centerAndZoom()" style="margin-left: 5px;margin-top: 5px">
+            回到中心点
         </button>
 
         <div class="panel panel-info" style="margin-top: 5px">
@@ -78,20 +79,46 @@
         chaneFrameHeight();
     }
 
+
     function centerAndZoom() {
         document.getElementById("iframePage").contentWindow.centerAndZoom();
     }
 
+
+    var selectValue = null;   //  selectvalue为radio中选中的值
+
+    // 获取单选框的值
+    function getRadioValue() {
+        var radio = document.getElementsByName("optionsRadios");
+        for (var i = 0; i < radio.length; i++) {
+            if (radio[i].checked == true) {
+                selectValue = radio[i].value;
+                break;
+            }
+        }
+    }
+
+    getRadioValue();
+
     function clearResults() {
-        document.getElementById("iframePage").contentWindow.clearResults();
+        if (selectValue != "option1") { // 防止重复点击
+            document.getElementById("iframePage").contentWindow.clearResults();
+        }
+        getRadioValue();
     }
 
     function search() {
-        document.getElementById("iframePage").contentWindow.search();
+        if (selectValue != "option2") {
+            document.getElementById("iframePage").contentWindow.search();
+        }
+        getRadioValue();
     }
 
     function searchLoop() {
-        document.getElementById("iframePage").contentWindow.searchLoop();
+        if (selectValue != "option3") {
+            document.getElementById("iframePage").contentWindow.searchLoop();
+        }
+        getRadioValue();
     }
 
 

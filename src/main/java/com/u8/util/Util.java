@@ -9,34 +9,34 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class Util {
-    // 百度地图的密匙
-    public static final String AK = "871b773ac9c6dd602ea8b581e8060f1e";
-
+//    // 百度地图的密匙
+//    public static final String AK = "871b773ac9c6dd602ea8b581e8060f1e";
+//
     // 地点索引的链接
     public static final String MAP_SEARCH_URL = "http://api.map.baidu.com/place/v2/search";
-
-    // 起送点纬度
-    public static final double START_LAT = 27.25749;
-
-    // 起送点经度
-    public static final double START_LNG = 111.739614;
-
-    // 起送点纬度
-//    public static final double START_LAT = 27.248322;
-
-    // 起送点经度
-//    public static final double START_LNG = 111.535337;
-
-
-    // 起送点经度
-    public static String START_INFO = "优八起送点";
-
-    // 限定区域
-    public static String REGION = "湖南省邵阳市邵东县";
+//
+//    // 起送点纬度
+//    public static final double START_LAT = 27.25749;
+//
+//    // 起送点经度
+//    public static final double START_LNG = 111.739614;
+//
+//    // 起送点纬度
+////    public static final double START_LAT = 27.248322;
+//
+//    // 起送点经度
+////    public static final double START_LNG = 111.535337;
+//
+//
+//    // 起送点信息
+//    public static String START_INFO = "优八起送点";
+//
+//    // 限定区域
+//    public static String REGION = "湖南省邵阳市邵东县";
 
 //    public static String REGION = "湖南省邵阳市双清区";
     // 起始点
-    public static final AddressInfo START = new AddressInfo("",REGION,START_INFO,START_LAT,START_LNG,START_INFO);
+//    public static final AddressInfo START = new AddressInfo("",REGION,START_INFO,START_LAT,START_LNG,START_INFO);
 
     // 平均半径,单位：m
     private static final double EARTH_RADIUS = 6371393;
