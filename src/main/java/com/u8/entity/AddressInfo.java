@@ -1,6 +1,7 @@
 package com.u8.entity;
 
 import lombok.Data;
+import lombok.ToString;
 
 import java.io.Serializable;
 
@@ -8,6 +9,7 @@ import java.io.Serializable;
  *  收货地址信息
  */
 @Data
+@ToString
 public class AddressInfo implements Serializable {
     private static final long serialVersionUID = 1L;
     // 订单号
@@ -37,16 +39,4 @@ public class AddressInfo implements Serializable {
         this.info = info;
     }
 
-    @Override
-    public String toString() {
-        return "AddressInfo{" +
-                "orderNo='" + orderNo + '\'' +
-                ", region='" + region + '\'' +
-                ", address='" + address + '\'' +
-                ", lat=" + lat +
-                ", lng=" + lng +
-                ", info='" + info + '\'' +
-                ", orderNum=" + orderNum +
-                '}';
-    }
 }

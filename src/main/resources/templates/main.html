@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ch">
+<html lang="ch" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
-    <script src="/webjars/jquery/jquery.js"></script>
-    <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css"/>
+    <script src="/webjars/jquery/3.4.1/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/webjars/bootstrap/3.4.1/css/bootstrap.min.css"/>
     <title>优八物流地图</title>
 </head>
 <body>
@@ -16,7 +16,7 @@
 </div>
 
 <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-    <div>
+    <form th:action="@{/logout}" method="post">
         <button type="button" class="btn btn-info" onclick="refresh()" style="margin-top: 5px">刷新页面
         </button>
 
@@ -24,39 +24,41 @@
             回到中心点
         </button>
 
-        <div class="panel panel-info" style="margin-top: 5px">
-            <div class="panel-heading">
-                <h3 class="panel-title">是否显示推荐路线（注：最多支持30个配送点，路线仅供参考）</h3>
+        <input type="submit" class="btn btn-info" style="margin-left: 5px;margin-top: 5px" value="注销"/>
+    </form>
+
+    <div class="panel panel-info" style="margin-top: 5px">
+        <div class="panel-heading">
+            <h3 class="panel-title">是否显示推荐路线（注：最多支持30个配送点，路线仅供参考）</h3>
+        </div>
+        <div class="panel-body">
+            <div class="radio">
+                <label>
+                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1"
+                           onclick="clearResults()" checked> 不显示推荐路线
+                </label>
             </div>
-            <div class="panel-body">
-                <div class="radio">
-                    <label>
-                        <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1"
-                               onclick="clearResults()" checked> 不显示推荐路线
-                    </label>
-                </div>
-                <div class="radio">
-                    <label>
-                        <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2"
-                               onclick="search()"> 显示推荐路线
-                    </label>
-                </div>
-                <div class="radio">
-                    <label>
-                        <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3"
-                               onclick="searchLoop()"> 显示推荐路线（环线）
-                    </label>
-                </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2"
+                           onclick="search()"> 显示推荐路线
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3"
+                           onclick="searchLoop()"> 显示推荐路线（环线）
+                </label>
             </div>
         </div>
+    </div>
 
-        <div class="panel panel-warning" style="margin-top: 5px" id="errorInfoPanel">
-            <div class="panel-heading">
-                <h3 class="panel-title" id="errorInfoTitle"></h3>
-            </div>
-            <div class="panel-body">
-                <p style="font-size: 14px" id="errorInfo"></p>
-            </div>
+    <div class="panel panel-warning" style="margin-top: 5px" id="errorInfoPanel">
+        <div class="panel-heading">
+            <h3 class="panel-title" id="errorInfoTitle"></h3>
+        </div>
+        <div class="panel-body">
+            <p style="font-size: 14px" id="errorInfo"></p>
         </div>
     </div>
 </div>
